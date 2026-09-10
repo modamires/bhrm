@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#123d4b" />
+    <meta
+      name="description"
+      content="بهرام؛ در سرزمین تام، یک ماجراجویی پر از پرش، کشف و معماهای عربی برای پایه‌های هفتم تا نهم."
+    />
+    <title>بهرام؛ در سرزمین تام | سفر و کشف</title>
+    <link
+      rel="icon"
+      type="image/png"
+      href="./assets/characters/bahram/bahram-icon.png"
+    />
+    <link
+      rel="preload"
+      href="./assets/fonts/Vazirmatn.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link rel="stylesheet" href="./styles/main.css" />
+  </head>
+  <body>
+    <main id="game-shell" aria-label="بازی بهرام؛ در سرزمین تام">
+      <div
+        id="game"
+        role="application"
+        aria-label="فضای بازی؛ حرکت با کلیدهای جهت و پرش با فاصله"
+      ></div>
+      <div id="ui"></div>
+      <div id="touch" class="touch-controls" hidden dir="ltr">
+        <div class="dpad">
+          <button data-control="left" aria-label="حرکت به چپ">←</button
+          ><button data-control="right" aria-label="حرکت به راست">→</button>
+        </div>
+        <button data-control="jump" class="jump-control" aria-label="پرش">
+          ↑
+        </button>
+      </div>
+      <div id="toast" role="status" aria-live="polite"></div>
+      <div id="loading">
+        <img
+          class="loading-portrait"
+          src="./assets/characters/bahram/bahram-icon.png"
+          alt="بهرام"
+        /><strong>بهرام؛ در سرزمین تام</strong
+        ><span id="load-label">مسیرهای تام آمادهٔ سفر می‌شوند…</span>
+        <div class="load-track"><i id="load-progress"></i></div>
+      </div>
+    </main>
+    <div class="portrait-hint">برای دیدن مسیر بیشتر، گوشی را افقی بگیر ↻</div>
+    <noscript>برای اجرای بازی، جاوااسکریپت مرورگر را فعال کن.</noscript>
+    <script src="./assets/vendor/phaser.min.js"></script>
+    <script type="module" src="./src/main.js"></script>
+    <script>
+      setTimeout(function () {
+        if (!window.__jarqegardReady) {
+          document.getElementById("load-label").textContent =
+            "بازی بارگذاری نشد. فایل‌ها را از یک میزبان وب باز کن و صفحه را تازه کن.";
+        }
+      }, 20000);
+    </script>
+  </body>
+</html>

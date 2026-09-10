@@ -1,0 +1,61 @@
+{
+  "name": "بهرام",
+  "frame": {
+    "width": 320,
+    "height": 384,
+    "footY": 352,
+    "columns": 10,
+    "resolution": 2
+  },
+  "animations": {
+    "idle": {
+      "count": 16,
+      "fps": 8,
+      "repeat": -1,
+      "start": 0
+    },
+    "run": {
+      "count": 16,
+      "fps": 28,
+      "repeat": -1,
+      "start": 16
+    },
+    "jump": {
+      "count": 4,
+      "fps": 24,
+      "repeat": 0,
+      "start": 32
+    },
+    "rise": {
+      "count": 6,
+      "fps": 12,
+      "repeat": -1,
+      "start": 36
+    },
+    "fall": {
+      "count": 6,
+      "fps": 12,
+      "repeat": -1,
+      "start": 42
+    },
+    "land": {
+      "count": 5,
+      "fps": 34,
+      "repeat": 0,
+      "start": 48
+    },
+    "collect": {
+      "count": 8,
+      "fps": 18,
+      "repeat": 0,
+      "start": 53
+    },
+    "victory": {
+      "count": 16,
+      "fps": 14,
+      "repeat": -1,
+      "start": 61
+    }
+  },
+  "frameCount": 77
+}
