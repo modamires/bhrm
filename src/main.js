@@ -1,5 +1,4 @@
-import { loadBank } from "./data/BankStore.js";
-const bankState = await loadBank();
+import { DisplaySystem } from "./gameplay/DisplaySystem.js";
 import { GAME, PHYSICS } from "./config.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { MenuScene } from "./scenes/MenuScene.js";
@@ -14,6 +13,8 @@ try {
 } catch {}
 const progress = new ProgressSystem(storage),
   audio = new AudioSystem(progress);
+const wallFlag = new URLSearchParams(location.search).get("wall");
+if (wallFlag === "1" || wallFlag === "0") progress.setSetting("wallMode", wallFlag === "1");
 await Promise.race([
   document.fonts.load("600 24px Vazirmatn"),
   new Promise((r) => setTimeout(r, 2500)),
@@ -49,7 +50,7 @@ const game = new Phaser.Game({
   callbacks: {
     preBoot(g) {
       g.progress = progress;
-      g.bankWarning = bankState.warning;
+      g.display = new DisplaySystem(g);
       g.audio = audio;
       g.inputSystem = new InputSystem(() => {
         const s = g.scene.getScene("Level");
@@ -58,20 +59,9 @@ const game = new Phaser.Game({
       });
       g.ui = new UISystem(g);
     },
+    postBoot(g) { g.display.start(); },
   },
 });
-const resize = () => {
-  document
-    .getElementById("ui")
-    .classList.toggle(
-      "compact-ui",
-      document.getElementById("game-shell").clientWidth < 950,
-    );
-  document.getElementById("ui").style.transform =
-    `scale(${document.getElementById("game-shell").clientWidth / GAME.width})`;
-};
-new ResizeObserver(resize).observe(document.getElementById("game-shell"));
-resize();
 window.addEventListener("pagehide", () => audio.pause(true));
 
 if (GAME.debug) window.__bahramGame = game;

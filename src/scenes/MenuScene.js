@@ -7,6 +7,7 @@ export class MenuScene extends Phaser.Scene {
     super("Menu");
   }
   create() {
+    this.game.display?.applyCamera(this);
     const p = PALETTES[0];
     this.progress = this.game.progress;
     this.background = new Background(this, p);

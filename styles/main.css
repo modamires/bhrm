@@ -1071,14 +1071,12 @@ kbd {
 .compact-ui .grade-card {
   font-size: 27px;
 }
-/* Partner branding and in-world question reader, v1.3 */
+/* Partner branding and in-world question reader */
 .partner-brands {position:absolute;left:64px;top:110px;display:flex;align-items:center;justify-content:center;gap:20px;width:510px;height:100px;padding:8px 22px;border-radius:24px;background:#ffffffeb;box-shadow:0 5px 24px #1a4f5c12;}
 .partner-brands img {object-fit:contain;display:block;}
 .partner-brands .tamland-logo {width:96px;height:90px;}
 .partner-brands .kave-logo {width:260px;height:94px;}
 .partner-brands>span {height:50px;width:1px;background:#d2e4dd;}
-.bank-link {position:absolute;left:79px;top:220px;width:190px;font-size:16px;padding:9px 13px;background:#f7fff0e8;border:1px solid #2d686c33;border-radius:14px;}
-.bank-link span {margin-right:8px;}
 .partner-brands.small {top:17px;left:513px;width:254px;height:57px;gap:10px;padding:4px 13px;border-radius:15px;}
 .partner-brands.small .tamland-logo {width:51px;height:49px;}
 .partner-brands.small .kave-logo {width:143px;height:54px;}
@@ -1101,3 +1099,61 @@ kbd {
 
 #hud-learn {direction:ltr;unicode-bidi:isolate;}
 .question-copy .question-explanation {font-size:20px;color:#b8f3d7;}
+/* Fixed question panel; the camera and answer arena use one lock. */
+.live-question {top:108px;left:106px;width:1068px;height:308px;padding:14px 20px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:9px;background:#123c4b;border:2px solid #9ddbc8;box-shadow:0 8px 24px #092d3b55;z-index:5;transform:none;animation:none;}
+.question-heading {display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:38px;}
+.question-caption {font-size:19px;font-weight:650;line-height:1.4;color:#c4ece0;}
+.question-expand {min-height:38px;white-space:nowrap;font-size:17px;border-radius:10px;padding:5px 12px;background:#eff8e8;color:#153e50;}
+.question-expand:hover,.question-image-button:hover {transform:none;}
+.question-body {display:flex;align-items:stretch;gap:22px;min-height:0;}
+.question-copy {min-height:0;scrollbar-color:#91c9bc #1c4a58;scroll-padding-block:8px;overscroll-behavior:contain;}
+.question-copy:focus-visible {outline:2px solid #ffd27e;outline-offset:3px;}
+.question-copy p {font-size:27px;line-height:1.55;margin:2px 0 8px;}
+.question-arabic {font-size:31px;line-height:1.55;}
+.question-image-button {width:260px;min-height:0;}
+.question-status {font-size:20px;line-height:1.5;border-top:1px solid #7db6af66;padding-top:7px;min-height:38px;max-height:70px;overflow:auto;color:#f9edc9;}
+.question-status.correct {color:#aaf2bd;}
+.question-option-list {font-size:23px;line-height:1.7;}
+.question-option-list .taken {color:#aaf2bd;}
+.question-detail {max-height:440px;overflow:auto;padding:10px 18px;font-size:27px;line-height:1.7;white-space:pre-wrap;}
+.question-detail p {font-size:inherit;white-space:pre-wrap;overflow-wrap:anywhere;}
+.question-detail img {display:block;max-width:100%;max-height:none;height:auto;margin:12px auto;background:white;border-radius:12px;}
+.question-detail .detail-arabic {color:#936323;}
+.question-detail ol {white-space:normal;}
+.display-actions {position:absolute;left:79px;top:220px;width:285px;display:flex;gap:9px;align-items:center;}
+.display-actions button {min-height:43px;font-size:16px;border:1px solid #2d686c55;border-radius:13px;background:#f5fbeeee;padding:8px 14px;}
+.display-actions button[aria-pressed=true] {background:#174b56;color:#fff5d7;}
+.display-actions button:last-child {display:grid;place-items:center;width:50px;padding:8px;}
+/* Wall mode fits the complete 16:9 scene with a 3% safe inset on any screen. */
+.wall-mode {background:#061b27;}
+.wall-mode #game-shell {top:50%;}
+.wall-mode .portrait-hint {display:none;}
+.wall-mode .live-question {top:103px;height:315px;border-width:3px;padding:14px 21px;}
+.wall-mode .question-copy p {font-size:33px;font-weight:650;line-height:1.5;}
+.wall-mode .question-copy .question-explanation {font-size:27px;}
+.wall-mode .question-caption {font-size:23px;}
+.wall-mode .question-expand {font-size:20px;min-height:43px;}
+.wall-mode .question-arabic {font-size:36px;font-weight:750;}
+.wall-mode .question-status {font-size:25px;font-weight:600;}
+.wall-mode .question-option-list {font-size:28px;line-height:1.65;}
+.wall-mode .question-image-button {width:300px;}
+.wall-mode .question-image-button span {font-size:16px;}
+.wall-mode .hud {top:22px;left:30px;right:30px;}
+.wall-mode .hud-chip {font-size:25px;background:#f3faee;padding:8px 12px;}
+.wall-mode .hud-secondary {font-size:17px;color:#315957;}
+.wall-mode .hud-level strong {font-size:21px;}
+.wall-mode .combo-chip {display:none;}
+.wall-mode .icon-btn {width:54px;height:54px;}
+.wall-mode .partner-brands.small {background:#fff;}
+.wall-mode .hero-copy p {font-size:25px;line-height:1.55;}
+.wall-mode .display-actions button {font-size:18px;}
+.wall-mode .level-mini small {font-size:18px;}
+.wall-mode .hero-tools .text-btn {font-size:20px;}
+.wall-mode .setting-row {font-size:23px;}
+.wall-mode .setting-row small {font-size:17px;}
+.wall-mode .panel {max-height:640px;}
+.wall-mode .question-detail {font-size:32px;max-height:460px;}
+.wall-mode .panel p {font-size:23px;}
+.wall-mode .panel .question-detail p {font-size:inherit;}
+.wall-mode .touch-controls button {min-width:calc(74px * var(--stage-scale,1));min-height:calc(64px * var(--stage-scale,1));font-size:calc(32px * var(--stage-scale,1));}
+.wall-mode #toast {font-size:clamp(22px,2.1vw,66px);max-width:80%;}

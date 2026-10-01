@@ -9,6 +9,7 @@ const defaults = () => ({
     reducedMotion: false,
     touch: false,
     enemies: false,
+    wallMode: false,
   },
   grades: {
     7: { unlocked: 1, results: {} },
@@ -21,7 +22,7 @@ export function sanitizeProgress(raw) {
   if (!raw || raw.version !== 1) return clean;
   if ([7, 8, 9].includes(raw.grade)) clean.grade = raw.grade;
   const s = raw.settings || {};
-  for (const k of ["music", "sfx", "reducedMotion", "touch", "enemies"])
+  for (const k of ["music", "sfx", "reducedMotion", "touch", "enemies", "wallMode"])
     if (typeof s[k] === "boolean") clean.settings[k] = s[k];
   if (Number.isFinite(s.volume))
     clean.settings.volume = Math.max(0, Math.min(1, s.volume));

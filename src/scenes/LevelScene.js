@@ -37,8 +37,10 @@ export class LevelScene extends Phaser.Scene {
     this.progressMax = 0;
     this.isPaused = false;
     this.lastToast = -10000;
+    this.debugTask = null;
   }
   create() {
+    this.game.display?.applyCamera(this);
     this.progress = this.game.progress;
     this.enemiesEnabled = this.progress.settings.enemies;
     this.audio = this.game.audio;
@@ -64,7 +66,8 @@ export class LevelScene extends Phaser.Scene {
       undefined,
       (p, o) => this.world.collisionFilter(p, o),
     );
-    this.cameras.main.setBounds(0, 0, this.level.length, 720);
+    this.cameras.main.removeBounds();
+    this.cameras.main.scrollY = 0;
     this.cameras.main.scrollX = 0;
     this.cameras.main.setRoundPixels(false);
     this.shadow = this.add.image(165, 649, "shadow").setDepth(7).setScale(0.9);
@@ -120,6 +123,7 @@ export class LevelScene extends Phaser.Scene {
     this.invulnerableUntil = this.time.now + 1300;
     this.particles.burst(this.player.x, this.player.y - 30, 13, 0xd3fff0, 160);
     this.feedback("از همین‌جا ادامه بده ✦", false);
+    this.education.clearActiveZone();
     this.education.lastJump = false;
     for (const z of this.education.zones) z.lastChoice = -1;
   }
@@ -132,14 +136,15 @@ export class LevelScene extends Phaser.Scene {
     this.scene.pause();
     this.ui.pauseMenu(this);
   }
-  resume() {
+  resume(preserveHud = false) {
     this.isPaused = false;
     this.controls.clear();
     this.controls.active = true;
     this.player.previousJump = false;
     this.audio.pause(false);
     this.scene.resume();
-    this.ui.hud(this, false);
+    if (preserveHud) this.ui.updateTouch();
+    else this.ui.hud(this, false);
   }
   complete() {
     if (this.finishing) return;
@@ -198,12 +203,15 @@ export class LevelScene extends Phaser.Scene {
       0,
       this.level.length - 1280,
     );
-    const arena = this.education.zones.find(
-      (z) => !z.solved && p.x > z.x + 20 && p.x < z.x + 1210,
-    );
-    if (arena) target = clamp(arena.x - 65, 0, this.level.length - 1280);
+    const arena = this.education.activeZone;
     const cam = this.cameras.main;
-    cam.scrollX += (target - cam.scrollX) * (1 - Math.exp(-dt * 6));
+    if (arena) {
+      // Exact screen lock, including the answer platforms and gates. Keep it
+      // after a correct answer until the player actually leaves the arena.
+      cam.scrollX = clamp(arena.x - 65, 0, this.level.length - GAME.width);
+    } else {
+      cam.scrollX += (target - cam.scrollX) * (1 - Math.exp(-dt * 6));
+    }
     this.background.update(time);
     this.progressMax = Math.max(this.progressMax, p.x);
     this.shadow

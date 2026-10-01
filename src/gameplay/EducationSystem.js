@@ -5,6 +5,7 @@ export class EducationSystem {
   constructor(scene) {
     this.scene = scene;
     this.zones = [];
+    this.activeZone = null;
     const qs = questionsFor(
       scene.progress.grade,
       scene.level.id + 1,
@@ -33,6 +34,9 @@ export class EducationSystem {
       step: 0,
     };
     this.zones.push(z);
+    z.leftBlock = s.world.static.create(x + 25, 405, "particle")
+      .setVisible(false).setDisplaySize(26, 490).refreshBody();
+    z.leftBlock.disableBody(true, true);
     z.block = s.world.static
       .create(x + 1163, 405, "particle")
       .setVisible(false)
@@ -69,7 +73,7 @@ export class EducationSystem {
         const plaque = label(s, px, 572, displayValue, {
           width: 221,
           height: 44,
-          size: 26,
+          size: 30,
           color: "#26475a",
           bg: "#fff4d4",
         });
@@ -80,7 +84,7 @@ export class EducationSystem {
         const plaque = label(s, px, 483, displayValue, {
           width: 186,
           height: 62,
-          size: 24,
+          size: 28,
           color: "#22475a",
           bg: "#fff4d4f2",
         });
@@ -90,7 +94,7 @@ export class EducationSystem {
         const plaque = label(s, px, 578, displayValue, {
           width: 180,
           height: 44,
-          size: 26,
+          size: 30,
           color: "#344b62",
           bg: "#fff3ce",
         });
@@ -104,31 +108,32 @@ export class EducationSystem {
         });
       }
     });
-    z.status = label(
-      s,
-      x + 560,
-      392,
-      type === "order"
-        ? "هر واژه را با پریدن روی سکوی آن بردار"
-        : "پاسخ درست، یک راه تازه",
-      {
-        width: 1000,
-        height: 42,
-        size: 20,
-        color: "#fff9e8",
-        bg: "#26485deb",
-      },
-    );
+    z.statusText = type === "order" ? "هر واژه را با پریدن روی سکوی آن بردار" : "پاسخ درست، یک راه تازه";
+    z.statusGood = false;
+    z.revision = 0;
   }
   setStatus(z, text, good = false) {
-    z.status.destroy();
-    z.status = label(this.scene, z.x + 560, 392, text, {
-      width: 1050,
-      height: 42,
-      size: 21,
-      color: "#fff9e8",
-      bg: good ? "#267f79" : "#26485deb",
-    });
+    z.statusText = text;
+    z.statusGood = good;
+    z.revision++;
+  }
+  clearActiveZone() {
+    this.activeZone?.leftBlock.disableBody(true, true);
+    this.activeZone = null;
+  }
+  syncActiveZone() {
+    const p = this.scene.player;
+    const current = this.activeZone;
+    if (current && (p.y > 850 || p.x < current.x - 500 || p.x > current.x + 1600 ||
+      (current.solved && (p.x > current.x + 1270 || p.x < current.x - 120)))) this.clearActiveZone();
+    if (!this.activeZone) {
+      this.activeZone = this.zones.find(z => !z.solved && p.x >= z.x + 80 && p.x < z.x + 1210) || null;
+      if (this.activeZone) {
+        this.activeZone.leftBlock.setActive(true);
+        this.activeZone.leftBlock.body.enable = true;
+      }
+    }
+    return this.activeZone;
   }
   choose(z, choice, time) {
     if (z.solved || time < z.nextAllowed || choice.taken) return;
@@ -170,6 +175,7 @@ export class EducationSystem {
   solve(z, time) {
     const s = this.scene;
     z.solved = true;
+    z.leftBlock.disableBody(true, true);
     z.block.disableBody(true, true);
     z.blockArt.destroy();
     z.objects.forEach((o) => o.destroy());
@@ -198,8 +204,7 @@ export class EducationSystem {
     const s = this.scene,
       p = s.player,
       b = p.sprite.body;
-    const visible = this.zones.find(z => p.x > z.x - 100 && p.x < z.x + 1300);
-    s.ui.showQuestion(visible, s);
+    this.syncActiveZone();
     const jumpEdge = input.jump && !this.lastJump;
     for (const z of this.zones) {
       if (z.solved || Math.abs(p.x - (z.x + 560)) > 830) continue;
@@ -221,6 +226,7 @@ export class EducationSystem {
       z.lastChoice = occupied;
     }
     this.lastJump = input.jump;
+    s.ui.showQuestion(this.activeZone, s);
   }
   get total() {
     return this.zones.length;

@@ -1,6 +1,6 @@
 # Original project materials
 
-The original code, procedural environment illustrations, generated Tam background illustrations, level compositions, sample educational data, and synthesized musical patterns supplied with Bahram in the Land of Tam may be used, modified, and redistributed under the MIT License below. The user-supplied Bahram character artwork and its image derivatives are excluded from this code license. No affiliation with any existing game publisher is claimed.
+The original code, procedural environment illustrations, generated Tam background illustrations, level compositions, and synthesized musical patterns supplied with Bahram in the Land of Tam may be used, modified, and redistributed under the MIT License below. The user-supplied Bahram character artwork, the submitted question text, and the question image are excluded from this code license. No affiliation with any existing game publisher is claimed.
 
 Copyright (c) 2026 Jarqegard contributors
 
@@ -12,14 +12,18 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 ## Third-party notices
 
-- Phaser 3.90.0: MIT; see `dist/assets/vendor/PHASER-LICENSE.txt`.
-- Vazirmatn 33.003: SIL Open Font License 1.1; see `dist/assets/fonts/OFL.txt`.
+- Phaser 3.90.0: MIT; see `assets/vendor/PHASER-LICENSE.txt`.
+- Vazirmatn 33.003: SIL Open Font License 1.1; see `assets/fonts/OFL.txt`.
 - Development tests use Node's standard library. The shipped production game needs no package installation.
 
 ## Bahram character art
 
-`art-source/bahram/body_parts`, the assembled reference and pose references are supplied by the project owner in `bram_bristle_character_pack.zip`. The atlas, assembled PNG, icon and embedded fallback in `dist` are derived from those supplied images. No separate art license accompanied the archive; original artwork rights remain with their rights holders. The MIT grant above covers the rig and assembly code, not an independent grant over the supplied character art.
+The assembled character, atlas, icon and embedded fallback are derived from artwork supplied by the project owner. No separate art license accompanied those source images; original artwork rights remain with their rights holders. The MIT grant above covers the rig and assembly code, not an independent grant over the supplied character art.
 
 ## Tam environment artwork
 
-The three original PNG backgrounds in `art-source/worlds/` were generated for this project using the built-in image generation tool. Their prompts are recorded in `art-source/worlds/prompts.json`. The WebP files in `dist/assets/worlds/` are optimized derivatives. These images were not taken from another game or an external asset library. They are included with the original project materials covered above.
+The WebP backgrounds in `assets/worlds/` are optimized derivatives of images generated for this project. These images were not taken from another game or an external asset library. They are included with the original project materials covered above.
+
+## Supplied educational content
+
+The fifteen questions in `src/data/grade7.js`, `src/data/grade8.js`, and `src/data/grade9.js`, and the river image in `assets/questions/grade7-river.jpeg`, are based on the project owner's supplied document. They are included for this game but are not independently licensed under the MIT terms above.
