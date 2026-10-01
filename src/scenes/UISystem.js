@@ -1,9 +1,14 @@
+import { questionsFor, STAGE_COUNTS } from "../data/questions.js";
+import { loadBank } from "../data/BankStore.js";
 import { LEVELS, fa, GAME } from "../config.js";
 import { ABOUT } from "../data/about.js";
 const bahramIcon = new URL(
   "../../assets/characters/bahram/bahram-icon.png",
   import.meta.url,
 ).href;
+const tamlandLogo = new URL("../../assets/branding/Tamland-Logo.svg", import.meta.url).href;
+const kaveLogo = new URL("../../assets/branding/dr-kave-logo.png", import.meta.url).href;
+const brands = (small = false) => `<div class="partner-brands ${small ? 'small' : ''}" aria-label="تاملند و دکتر علیرضا کاوه"><img class="tamland-logo" src="${tamlandLogo}" alt="تاملند"><span></span><img class="kave-logo" src="${kaveLogo}" alt="دکتر علیرضا کاوه"></div>`;
 const icons = {
   gear: '<path d="m10 2 1-1h2l1 1 .5 2 2 1 2-.4 1.5 1.5-.4 2 1 2 2 .5v3l-2 .5-1 2 .4 2-1.5 1.5-2-.4-2 1-.5 2h-3l-.5-2-2-1-2 .4L3 18l.4-2-1-2L1 13v-2l2-.5 1-2-.4-2L5 5l2 .4 2-1z"/><circle cx="12" cy="11.5" r="3.5"/>',
   help: '<circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 1 1 4 3c-1 1-1 2-1 2m0 3h.01"/>',
@@ -32,6 +37,7 @@ export class UISystem {
         this.modal !== "result"
       ) {
         e.preventDefault();
+        e.stopPropagation();
         this.closeModal();
       }
     });
@@ -69,7 +75,9 @@ export class UISystem {
     this.clearTransient();
     this.updateTouch();
     const unlocked = this.progress.progress.unlocked;
-    this.root.innerHTML = `<section class="screen menu-screen"><header class="menu-top"><div class="brand"><img class="brand-mark" src="${bahramIcon}" alt=""><span>بهرام؛ در سرزمین تام</span></div><div class="menu-meta"><span class="mini-pill">یک سفر پر از کشف</span><span>نسخهٔ ۱.۲</span></div></header><div class="hero-copy"><div class="eyebrow">به سرزمین تام خوش آمدی</div><h1><span class="hero-name">بهرام</span><span class="hero-subtitle">در سرزمین تام</span></h1><p>بپر، کشف کن، راهت را پیدا کن.<br>سه دنیا و کلی مسیر تازه در تام!</p><div class="hero-actions"><button class="primary" data-action="start">شروع بازی <span class="play-icon">▶</span></button><button class="secondary" data-action="grade">پایهٔ ${fa(this.progress.grade)} <span>⌄</span></button></div><div class="enemy-option"><div><strong>دشمن‌ها</strong><small>ربات‌های بازیگوش در مسیر</small></div><span id="enemy-status">${this.progress.settings.enemies ? "روشن" : "خاموش"}</span><button class="switch" role="switch" aria-label="فعال‌کردن دشمن‌ها" aria-checked="${this.progress.settings.enemies}" data-action="enemies"></button></div><div class="hero-tools"><button class="text-btn" data-action="levels">انتخاب مرحله</button><button class="text-btn" data-action="help">${icon("help")} راهنما</button><button class="text-btn" data-action="settings">${icon("gear")} تنظیمات</button><button class="text-btn" data-action="about">دربارهٔ ما</button></div></div><div class="hero-note">من «بهرام»م. آماده‌ای؟</div><nav class="level-strip" aria-label="دنیاهای بازی">${LEVELS.map((l, i) => `<button class="level-mini ${i === 0 ? "active" : ""} ${i >= unlocked ? "locked" : ""}" data-action="level-${i}"><img class="mini-art" src="${this.game.thumbnails[i]}" alt=""><span><strong>${l.title}</strong><small>${l.focus}</small></span><span class="mini-status">${i < unlocked ? (this.progress.progress.results[i] ? "✦".repeat(this.progress.progress.results[i].stars) : "←") : "◇"}</span></button>`).join("")}</nav></section>`;
+    this.root.innerHTML = `<section class="screen menu-screen"><header class="menu-top"><div class="brand"><img class="brand-mark" src="${bahramIcon}" alt=""><span>بهرام؛ در سرزمین تام</span></div><div class="menu-meta"><span class="mini-pill">یک سفر پر از کشف</span><span>نسخهٔ ۱.۳</span></div></header><div class="hero-copy"><div class="eyebrow">به سرزمین تام خوش آمدی</div><h1><span class="hero-name">بهرام</span><span class="hero-subtitle">در سرزمین تام</span></h1><p>بپر، کشف کن، راهت را پیدا کن.<br>سه مرحله و پنج سؤال برای هر پایه!</p><div class="hero-actions"><button class="primary" data-action="start">شروع بازی <span class="play-icon">▶</span></button><button class="secondary" data-action="grade">پایهٔ ${fa(this.progress.grade)} <span>⌄</span></button></div><div class="enemy-option"><div><strong>دشمن‌ها</strong><small>ربات‌های بازیگوش در مسیر</small></div><span id="enemy-status">${this.progress.settings.enemies ? "روشن" : "خاموش"}</span><button class="switch" role="switch" aria-label="فعال‌کردن دشمن‌ها" aria-checked="${this.progress.settings.enemies}" data-action="enemies"></button></div><div class="hero-tools"><button class="text-btn" data-action="levels">انتخاب مرحله</button><button class="text-btn" data-action="help">${icon("help")} راهنما</button><button class="text-btn" data-action="settings">${icon("gear")} تنظیمات</button><button class="text-btn" data-action="about">دربارهٔ ما</button></div></div>${brands()}<button class="bank-link" data-action="bank">بانک سؤال معلم <span>↗</span></button><div class="hero-note">من «بهرام»م. آماده‌ای؟</div><nav class="level-strip" aria-label="دنیاهای بازی">${LEVELS.map((l, i) => `<button class="level-mini ${i === 0 ? "active" : ""} ${i >= unlocked ? "locked" : ""}" data-action="level-${i}"><img class="mini-art" src="${this.game.thumbnails[i]}" alt=""><span><strong>${l.title}</strong><small>${l.focus}</small></span><span class="mini-status">${i < unlocked ? (this.progress.progress.results[i] ? "✦".repeat(this.progress.progress.results[i].stars) : "←") : "◇"}</span></button>`).join("")}</nav></section>`;
+    if (this.game.bankWarning) { this.feedback(this.game.bankWarning, false); this.game.bankWarning = ""; }
+    this.bind("bank", () => { location.href = new URL("../../question-bank.html", import.meta.url).href; });
     this.bind("start", () => this.startLevel(0));
     this.bind("grade", () => this.gradeMenu());
     this.bind("levels", () => this.levelMenu());
@@ -111,9 +119,16 @@ export class UISystem {
       body.append(p);
     }
   }
-  startLevel(level) {
+  async startLevel(level) {
     if (level >= this.progress.progress.unlocked && !GAME.debug) return;
     this.game.audio.unlock();
+    if (this.starting) return;
+    this.starting = true;
+    try { await loadBank(); } finally { this.starting = false; }
+    if (questionsFor(this.progress.grade, level + 1, STAGE_COUNTS[level]).length < STAGE_COUNTS[level]) {
+      this.feedback(`برای این مرحله ${fa(STAGE_COUNTS[level])} سؤال فعال لازم است. بانک سؤال را کامل کنید.`, false);
+      return;
+    }
     this.modal = null;
     this.clearTransient();
     this.game.scene.stop("Menu");
@@ -129,7 +144,7 @@ export class UISystem {
   }
   hud(scene, intro = true) {
     this.modal = null;
-    this.root.innerHTML = `<div class="hud"><div class="hud-group"><button class="icon-btn" aria-label="توقف و تنظیمات" data-action="pause">${icon("gear")}</button><div class="hud-chip"><span class="token-icon">${icon("compass")}</span><span id="hud-collect">۰</span><span class="hud-secondary">نشان</span></div><div class="hud-chip hud-score"><span id="hud-score">۰</span><span class="hud-secondary">امتیاز</span></div><div class="hud-chip combo-chip" id="hud-combo"><span>✧</span><span id="hud-streak">۰</span></div></div><div class="hud-group"><div class="hud-chip"><span id="hud-learn">۰ / ۴</span><span class="hud-secondary">معما</span></div><div class="hud-level"><strong>${scene.level.title}</strong><div class="progress-track"><i id="hud-progress"></i></div></div></div></div>${intro ? `<div class="level-intro"><small>دنیای ${fa(scene.level.id + 1)}</small><h2>${scene.level.title}</h2><p>${scene.palette.subtitle}</p></div>` : ""}`;
+    this.root.innerHTML = `${brands(true)}<div class="hud"><div class="hud-group"><button class="icon-btn" aria-label="توقف و تنظیمات" data-action="pause">${icon("gear")}</button><div class="hud-chip"><span class="token-icon">${icon("compass")}</span><span id="hud-collect">۰</span><span class="hud-secondary">نشان</span></div><div class="hud-chip hud-score"><span id="hud-score">۰</span><span class="hud-secondary">امتیاز</span></div><div class="hud-chip combo-chip" id="hud-combo"><span>✧</span><span id="hud-streak">۰</span></div></div><div class="hud-group"><div class="hud-chip"><span id="hud-learn">۰ / ${fa(scene.level.challenges.length)}</span><span class="hud-secondary">معما</span></div><div class="hud-level"><strong>${scene.level.title}</strong><div class="progress-track"><i id="hud-progress"></i></div></div></div></div>${intro ? `<div class="level-intro"><small>دنیای ${fa(scene.level.id + 1)}</small><h2>${scene.level.title}</h2><p>${scene.palette.subtitle}</p></div>` : ""}`;
     this.bind("pause", () => scene.pause());
     this.updateTouch();
     this.updateHud(scene);
@@ -151,6 +166,63 @@ export class UISystem {
     this.root
       .querySelector("#hud-combo")
       ?.classList.toggle("bonus", s.time.now < s.bonusUntil);
+  }
+  showQuestion(z, scene) {
+    let card = this.root.querySelector(".live-question");
+    if (!z || this.modal) { card?.remove(); return; }
+    const key = `${z.q.id}:${z.step}:${z.solved}`;
+    if (card?.dataset.key === key) return;
+    card?.remove();
+    card = document.createElement("section");
+    card.className = "live-question" + (z.q.image ? " has-image" : "");
+    card.dataset.key = key;
+    card.setAttribute("aria-label", "صورت سؤال");
+    const content = document.createElement("div"); content.className = "question-copy";
+    const title = document.createElement("small");
+    title.textContent = `سؤال ${fa(z.index + 1)} از ${fa(scene.education.total)} · ` + (z.solved ? "پاسخ درست ✓" : z.type === "order" ? "واژه‌ها را به ترتیب جمع کن" : z.type === "gate" ? "داخل دروازهٔ پاسخ برو و پرش را بزن" : "روی سکوی پاسخ بپر");
+    const prompt = document.createElement("p"); prompt.textContent = z.q.promptFa;
+    const phrase = document.createElement("div"); phrase.className = "question-arabic";
+    phrase.textContent = z.type === "order" ? (z.order.join(" ") || "از اولین واژه شروع کن") : z.q.arabicText || "";
+    content.append(title, prompt, phrase);
+    if (z.solved && z.q.explanationFa) {
+      const explanation = document.createElement("p"); explanation.className = "question-explanation"; explanation.textContent = z.q.explanationFa; content.append(explanation);
+    }
+    if (z.numbered) {
+      const list = document.createElement("div"); list.className = "question-option-list";
+      z.choices.forEach((choice, i) => { const line = document.createElement("div"); line.textContent = `${fa(i + 1)}. ${choice.value}`; list.append(line); });
+      content.append(list);
+    }
+    card.append(content);
+    if (z.q.image) {
+      const button = document.createElement("button"); button.className = "question-image-button";
+      button.setAttribute("aria-label", "بزرگ‌نمایی تصویر سؤال");
+      const img = document.createElement("img"); img.src = z.q.image; img.alt = z.q.imageAlt || "تصویر سؤال";
+      img.onerror = () => { button.textContent = "تصویر بارگذاری نشد"; };
+      const hint = document.createElement("span"); hint.textContent = "بزرگ‌نمایی ⤢";
+      button.append(img, hint);
+      button.onclick = () => {
+        scene.controls.clear(); scene.controls.active = false; scene.audio.pause(true); scene.scene.pause(); this.updateTouch();
+        this.panel("تصویر سؤال", '<div class="enlarged-question"></div>', { wide: true, type: "question-image", onClose: () => scene.resume() });
+        const large = document.createElement("img"); large.src = z.q.image; large.alt = z.q.imageAlt || "تصویر سؤال";
+        this.root.querySelector(".enlarged-question").append(large);
+      };
+      card.append(button);
+    }
+    this.root.append(card);
+  }
+  celebrate(final = false) {
+    const layer = document.getElementById("confetti");
+    layer.style.setProperty("--fall", `${layer.clientHeight + 60}px`);
+    const reduced = this.progress.settings.reducedMotion;
+    const count = reduced ? 12 : final ? 130 : 65;
+    const colors = ["#ffcc54", "#f76b8a", "#59dcca", "#66afff", "#b68cff", "#fff4dd"];
+    for (let i = 0; i < count; i++) {
+      const piece = document.createElement("i");
+      piece.style.cssText = `left:${Math.random()*100}%;background:${colors[i%colors.length]};--drift:${Math.random()*260-130}px;--spin:${Math.random()*1000-500}deg;animation-duration:${reduced ? .9 : 2.3+Math.random()*1.9}s;animation-delay:${Math.random()*.35}s;width:${6+Math.random()*6}px;height:${4+Math.random()*7}px`;
+      piece.addEventListener("animationend", () => piece.remove(), { once: true });
+      layer.append(piece);
+      setTimeout(() => piece.remove(), 5000);
+    }
   }
   feedback(text, good = true) {
     const toast = document.getElementById("toast");

@@ -1,4 +1,4 @@
-import { REWARDS } from "../config.js";
+import { REWARDS, fa } from "../config.js";
 import { questionsFor, shuffled } from "../data/questions.js";
 import { label, gateArt } from "../art/Assets.js";
 export class EducationSystem {
@@ -7,8 +7,8 @@ export class EducationSystem {
     this.zones = [];
     const qs = questionsFor(
       scene.progress.grade,
-      scene.level.type,
-      4,
+      scene.level.id + 1,
+      scene.level.challenges.length,
       scene.runSeed,
     );
     scene.level.challenges.forEach((x, i) => {
@@ -53,58 +53,20 @@ export class EducationSystem {
           .setTint(0xe4f9c2)
           .setAlpha(0.7),
       );
-    const title =
-      type === "platform"
-        ? "روی سکوی پاسخ بپر"
-        : type === "gate"
-          ? "داخل دروازه برو و پرش را بزن"
-          : "واژه‌ها را به ترتیب جمع کن";
-    // The question remains in the world; it never pauses the player or opens a quiz modal.
-    z.panel = s.add.graphics().setDepth(14);
-    z.panel
-      .fillStyle(0x153e50, 0.94)
-      .fillRoundedRect(x + 65, 210, 990, 154, 26);
-    z.panel
-      .lineStyle(1, 0xddf7df, 0.35)
-      .strokeRoundedRect(x + 65, 210, 990, 154, 26);
-    z.title = label(s, x + 560, 235, title, {
-      width: 810,
-      height: 36,
-      size: 17,
-      color: "#a9ded4",
-      weight: 500,
-    });
-    z.prompt = label(s, x + 560, 276, q.promptFa, {
-      width: 915,
-      height: 46,
-      size: type === "order" ? 25 : 24,
-      color: "#fff5db",
-    });
-    z.word = label(
-      s,
-      x + 560,
-      329,
-      type === "order" ? "از اولین واژه شروع کن" : q.arabicText,
-      {
-        width: 870,
-        height: 44,
-        size: type === "order" ? 21 : 30,
-        color: "#ffda86",
-        weight: 700,
-      },
-    );
     const options = shuffled(
       type === "order" ? q.tokens : q.choices,
       index + s.runSeed + q.grade,
     );
+    z.numbered = options.some(value => value.length > 20);
     z.choices = [];
-    const gap = type === "order" ? 185 : 290;
+    const gap = type === "order" ? 185 : options.length === 4 ? 250 : 290;
     const start = x + 560 - ((options.length - 1) * gap) / 2;
     options.forEach((value, i) => {
       const px = start + i * gap;
+      const displayValue = z.numbered ? `گزینهٔ ${fa(i + 1)}` : value;
       if (type === "platform") {
         const body = s.world.platform(px - 112, 545, 224, 52, true);
-        const plaque = label(s, px, 572, value, {
+        const plaque = label(s, px, 572, displayValue, {
           width: 221,
           height: 44,
           size: 26,
@@ -115,7 +77,7 @@ export class EducationSystem {
       } else if (type === "gate") {
         const key = gateArt(s, "choice-gate", 210, 153);
         const gate = s.add.image(px, 649, key).setOrigin(0.5, 1).setDepth(11);
-        const plaque = label(s, px, 483, value, {
+        const plaque = label(s, px, 483, displayValue, {
           width: 186,
           height: 62,
           size: 24,
@@ -125,7 +87,7 @@ export class EducationSystem {
         z.choices.push({ value, x: px, y: 649, art: gate, label: plaque });
       } else {
         const body = s.world.platform(px - 75, 554, 150, 45, true);
-        const plaque = label(s, px, 578, value, {
+        const plaque = label(s, px, 578, displayValue, {
           width: 180,
           height: 44,
           size: 26,
@@ -198,14 +160,6 @@ export class EducationSystem {
       z.step++;
       s.audio.effect("collect");
       s.particles.burst(choice.x, choice.y - 45, 10, 0xffe49b, 100);
-      z.word.destroy();
-      z.word = label(s, z.x + 560, 329, z.order.join(" "), {
-        width: 875,
-        height: 47,
-        size: 28,
-        color: "#ffda86",
-        weight: 700,
-      });
       if (z.step < z.q.tokens.length) {
         this.setStatus(z, "خوبه! حالا واژهٔ بعدی را پیدا کن");
         return;
@@ -230,6 +184,7 @@ export class EducationSystem {
     } else s.ui.feedback("آفرین! " + z.q.explanationFa, true);
     s.stats.score += REWARDS.correct;
     s.audio.effect("correct");
+    s.ui.celebrate();
     s.player.reward(time);
     this.setStatus(z, "✓ " + z.q.explanationFa, true);
     s.particles.burst(s.player.x, s.player.y - 45, 26, 0xffdc85, 220);
@@ -243,6 +198,8 @@ export class EducationSystem {
     const s = this.scene,
       p = s.player,
       b = p.sprite.body;
+    const visible = this.zones.find(z => p.x > z.x - 100 && p.x < z.x + 1300);
+    s.ui.showQuestion(visible, s);
     const jumpEdge = input.jump && !this.lastJump;
     for (const z of this.zones) {
       if (z.solved || Math.abs(p.x - (z.x + 560)) > 830) continue;

@@ -1,3 +1,5 @@
+import { loadBank } from "./data/BankStore.js";
+const bankState = await loadBank();
 import { GAME, PHYSICS } from "./config.js";
 import { BootScene } from "./scenes/BootScene.js";
 import { MenuScene } from "./scenes/MenuScene.js";
@@ -47,6 +49,7 @@ const game = new Phaser.Game({
   callbacks: {
     preBoot(g) {
       g.progress = progress;
+      g.bankWarning = bankState.warning;
       g.audio = audio;
       g.inputSystem = new InputSystem(() => {
         const s = g.scene.getScene("Level");
@@ -70,3 +73,5 @@ const resize = () => {
 new ResizeObserver(resize).observe(document.getElementById("game-shell"));
 resize();
 window.addEventListener("pagehide", () => audio.pause(true));
+
+if (GAME.debug) window.__bahramGame = game;

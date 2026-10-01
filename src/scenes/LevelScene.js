@@ -153,6 +153,7 @@ export class LevelScene extends Phaser.Scene {
     this.player.sprite.body.setAccelerationX(0);
     this.player.sprite.body.setVelocityX(0);
     this.audio.effect("complete");
+    this.ui.celebrate(true);
     this.particles.burst(this.player.x, this.player.y - 90, 45, 0xffe9a0, 310);
     const accuracy = this.stats.attempts
       ? Math.round(
@@ -174,6 +175,7 @@ export class LevelScene extends Phaser.Scene {
     this.time.delayedCall(1400, () => {
       this.scene.pause();
       this.audio.pause(true);
+      this.ui.clearTransient();
       this.ui.results(this, result);
     });
   }
